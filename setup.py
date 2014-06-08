@@ -1,4 +1,5 @@
 from distutils.core import setup, Extension
+import platform
 
 
 ext_modules = [
@@ -29,9 +30,36 @@ ext_modules = [
 ]
 
 
+if platform.system().startswith('Darwin'):
+    # Extra stuff to do on OSX.
+    ext_modules.insert(0, Extension(
+        '_macosx_lib',
+        include_dirs=[
+            '/usr/include/SDL',
+            '/usr/local/include/SDL',
+            'pygame/lib',
+        ],
+        libraries=['SDL', 'objc'],
+        extra_link_args=['-framework', 'Cocoa'],
+        sources=[
+            'pygame/lib/sdlmain_osx.m',
+            'pygame/_macosx_built/c/_macosx_lib.c',
+        ],
+    ))
+
+
 setup(
     name='pygame_cffi',
-    version = '0.1',
+    version='0.1',
     url='https://github.com/CTPUG/pygame_cffi',
-    ext_modules=ext_modules
+    ext_modules=ext_modules,
+    packages=[
+        'pygame', 'pygame._jpg_built', 'pygame._macosx_built',
+        'pygame._png_built', 'pygame._sdl_built', 'pygame._sdl_keys_built',
+        'pygame.builders',
+    ],
+    include_package_data=True,
+    package_data={
+        'pygame': ['*/data/*.dat', 'lib/*', '*.ttf', 'pygame_icon.*'],
+    }
 )

@@ -1,3 +1,4 @@
+from pygame._macosx_built import ffi, lib as sdlmain_osx
 import os
 import sys
 
@@ -5,26 +6,6 @@ try:
     import MacOS
 except:
     MacOS = None
-
-import cffi
-
-
-ffi = cffi.FFI()
-ffi.cdef("""
-const char* WMEnable(void);
-int RunningFromBundleWithNSApplication(void);
-int InstallNSApplication(void);
-""")
-
-sdlmain_osx = ffi.verify(
-    libraries=['SDL', 'sdlmain_osx'],
-    library_dirs=[os.path.dirname(__file__)],
-    include_dirs=[
-        '/usr/local/include/SDL',
-        '/usr/include/SDL',
-        os.path.dirname(__file__),
-    ],
-    source='#include "sdlmain_osx.h"')
 
 
 def pre_video_init():
