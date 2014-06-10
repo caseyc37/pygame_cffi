@@ -276,7 +276,7 @@ typedef enum {
 
 builder.build(
     "_sdl_keys",
-    srcdir=os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), '_sdl_keys_built/'),
+    srcdir=os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '../cffi_modules/')),
     include_dirs=['/usr/include/SDL', '/usr/local/include/SDL'],
     source="""
     #include <SDL_keysym.h>

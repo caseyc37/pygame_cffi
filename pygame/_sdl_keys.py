@@ -5,7 +5,7 @@ all, so having them in a separate FFI unit makes startup faster when we've
 changed the cdef and have to rebuild.
 """
 
-from pygame._sdl_keys_built import lib
+from pygame.cffi_modules._sdl_keys import lib
 
 K_UNKNOWN = lib.SDLK_UNKNOWN
 K_FIRST = lib.SDLK_FIRST

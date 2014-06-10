@@ -1,3 +1,3 @@
-from pygame._jpg_built import lib as jpglib
+from pygame.cffi_modules._jpg import lib as jpglib
 
 __all__ = ['jpglib']

@@ -1,0 +1,1 @@
+{'libraries': ['SDL', 'SDL_image', 'SDL_ttf', 'SDL_mixer'], 'include_dirs': ['/usr/include/SDL', '/usr/local/include/SDL']}

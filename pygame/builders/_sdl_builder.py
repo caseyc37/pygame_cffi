@@ -592,7 +592,7 @@ builder.build(
     "_sdl",
     libraries=['SDL', 'SDL_image', 'SDL_ttf', 'SDL_mixer'],
     include_dirs=['/usr/include/SDL', '/usr/local/include/SDL'],
-    srcdir=os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), '_sdl_built/'),
+    srcdir=os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '../cffi_modules/')),
     source="""
     #include <SDL.h>
     #include <SDL_image.h>

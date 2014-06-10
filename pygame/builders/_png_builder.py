@@ -22,7 +22,7 @@ static int write_png(const char *file_name, unsigned char **rows, int w, int h,
 builder.build(
     '_png',
     libraries=['png'],
-    srcdir=os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), '_png_built/'),
+    srcdir=os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '../cffi_modules/')),
     source="""
     #define PNG_SKIP_SETJMP_CHECK 1
     #include <png.h>

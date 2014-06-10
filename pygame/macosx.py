@@ -1,4 +1,4 @@
-from pygame._macosx_built import ffi, lib as sdlmain_osx
+from pygame.cffi_modules._macosx import ffi, lib as sdlmain_osx
 import os
 import sys
 

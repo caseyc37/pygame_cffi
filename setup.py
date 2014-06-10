@@ -1,65 +1,49 @@
-from distutils.core import setup, Extension
+from distutils.core import setup
 import platform
 
 
-ext_modules = [
-    Extension(
-        '_jpg_lib',
-        include_dirs=[],
-        libraries=['jpeg'],
-        sources=['pygame/_jpg_built/c/_jpg_lib.c'],
-    ),
-    Extension(
-        '_png_lib',
-        include_dirs=[],
-        libraries=['png'],
-        sources=['pygame/_png_built/c/_png_lib.c'],
-    ),
-    Extension(
-        '_sdl_lib',
-        include_dirs=['/usr/include/SDL', '/usr/local/include/SDL'],
-        libraries=['SDL', 'SDL_image', 'SDL_ttf', 'SDL_mixer'],
-        sources=['pygame/_sdl_built/c/_sdl_lib.c'],
-    ),
-    Extension(
-        '_sdl_keys_lib',
-        include_dirs=['/usr/include/SDL', '/usr/local/include/SDL'],
-        libraries=[],
-        sources=['pygame/_sdl_keys_built/c/_sdl_keys_lib.c'],
-    )
-]
+def get_extensions():
+    from distutils.core import Extension
+    import os, sys
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pygame'))
 
+    from cffi_modules import get_extensions as get_possible_extensions
+    ext_modules = filter(lambda e: not e.name.startswith('_macosx'),
+                         get_possible_extensions())
 
-if platform.system().startswith('Darwin'):
-    # Extra stuff to do on OSX.
-    ext_modules.insert(0, Extension(
-        '_macosx_lib',
-        include_dirs=[
-            '/usr/include/SDL',
-            '/usr/local/include/SDL',
-            'pygame/lib',
-        ],
-        libraries=['SDL', 'objc'],
-        extra_link_args=['-framework', 'Cocoa'],
-        sources=[
-            'pygame/lib/sdlmain_osx.m',
-            'pygame/_macosx_built/c/_macosx_lib.c',
-        ],
-    ))
+    if platform.system().startswith('Darwin'):
+        # Extra stuff to do on OSX.
+        ext_modules.insert(0, Extension(
+            '_macosx_lib',
+            include_dirs=[
+                '/usr/include/SDL',
+                '/usr/local/include/SDL',
+                'pygame/lib',
+            ],
+            libraries=['SDL', 'objc'],
+            extra_link_args=['-framework', 'Cocoa'],
+            sources=[
+                'pygame/lib/sdlmain_osx.m',
+                'pygame/_macosx_built/c/_macosx_lib.c',
+            ],
+        ))
+    return ext_modules
 
 
 setup(
     name='pygame_cffi',
     version='0.1',
     url='https://github.com/CTPUG/pygame_cffi',
-    ext_modules=ext_modules,
+    ext_modules=get_extensions(),
     packages=[
-        'pygame', 'pygame._jpg_built', 'pygame._macosx_built',
-        'pygame._png_built', 'pygame._sdl_built', 'pygame._sdl_keys_built',
-        'pygame.builders',
+        'pygame', 'pygame.builders', 'pygame.cffi_modules',
+        'pygame.cffi_modules._sdl', 'pygame.cffi_modules._sdl_keys',
+        'pygame.cffi_modules._jpg', 'pygame.cffi_modules._png',
+        'pygame.cffi_modules._macosx'
     ],
     include_package_data=True,
     package_data={
-        'pygame': ['*/data/*.dat', 'lib/*', '*.ttf', 'pygame_icon.*'],
+        'pygame': ['lib/*', '*.ttf', 'pygame_icon.*'],
+        'pygame.cffi_modules': ['*/BUILD-ARGS.txt', '*/data/*.dat']
     }
 )

@@ -1,4 +1,4 @@
-from pygame._sdl_built import ffi, lib as sdl
+from pygame.cffi_modules._sdl import ffi, lib as sdl
 
 
 def get_sdl_version():

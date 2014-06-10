@@ -17,7 +17,7 @@ int write_jpeg (const char *file_name, unsigned char** image_buffer,
 builder.build(
     '_jpg',
     libraries=['jpeg'],
-    srcdir=os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), '_jpg_built/'),
+    srcdir=os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '../cffi_modules/')),
     source="""
     #include <jpeglib.h>
 

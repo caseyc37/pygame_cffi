@@ -11,21 +11,11 @@ __all__ = ['lib', 'ffi']
 # load the serialized parser
 _parserfile = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                            'data/parser.dat')
-with open(_parserfile) as f:
-    _parser = pickle.loads(f.read())
+with open(_parserfile, 'rb') as f:
+    _parser = pickle.load(f)
 
 
-ffi = FFI(parser=_parser)
-
-
-def get_extension():
-    from distutils.core import Extension
-    return Extension(
-        '_macosx_lib',
-        include_dirs=['/usr/local/include/SDL', '/usr/include/SDL'],
-        libraries=['SDL', 'objc'],
-        sources=['/Users/jerith/code/pygame_cffi/pygame/_macosx_built/c/_macosx_lib.c'],
-    )
+ffi = FFI(parser=_parser, backend=_libmodule.ffi)
 
 from cffibuilder import ffiplatform, model
 from cffibuilder.genengine_cpy import GenCPythonEngine

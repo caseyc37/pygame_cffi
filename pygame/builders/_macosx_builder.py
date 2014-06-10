@@ -20,7 +20,7 @@ builder.build(
         '/usr/local/include/SDL',
         '/usr/include/SDL',
     ],
-    srcdir=os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), '_macosx_built/'),
+    srcdir=os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '../cffi_modules/')),
     extra_link_args=['-framework', 'Cocoa'],
     source=getResource('lib/sdlmain_osx.h').read(),
 )
