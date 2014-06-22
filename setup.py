@@ -3,30 +3,15 @@ import platform
 
 
 def get_extensions():
-    from distutils.core import Extension
     import os, sys
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pygame'))
 
     from cffi_modules import get_extensions as get_possible_extensions
-    ext_modules = filter(lambda e: not e.name.startswith('_macosx'),
-                         get_possible_extensions())
-
-    if platform.system().startswith('Darwin'):
-        # Extra stuff to do on OSX.
-        ext_modules.insert(0, Extension(
-            '_macosx_lib',
-            include_dirs=[
-                '/usr/include/SDL',
-                '/usr/local/include/SDL',
-                'pygame/lib',
-            ],
-            libraries=['SDL', 'objc'],
-            extra_link_args=['-framework', 'Cocoa'],
-            sources=[
-                'pygame/lib/sdlmain_osx.m',
-                'pygame/_macosx_built/c/_macosx_lib.c',
-            ],
-        ))
+    ext_modules = get_possible_extensions()
+    if not platform.system().startswith('Darwin'):
+        # Exclude extra OSX stuff if we're not on OSX.
+        ext_modules = filter(lambda e: not e.name.startswith('_macosx'),
+                             ext_modules)
     return ext_modules
 
 

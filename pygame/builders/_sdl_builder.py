@@ -2,8 +2,6 @@ import os
 
 from cffibuilder import Builder
 
-from pygame.pkgdata import getResource
-
 
 builder = Builder()
 builder.cdef("""
@@ -876,10 +874,10 @@ builder.build(
 
     %(rotate)s
     """ % {
-        'surface_h': getResource('lib/surface.h').read(),
-        'alphablit': getResource('lib/alphablit.c').read(),
-        'surface_fill': getResource('lib/surface_fill.c').read(),
-        'scale2x': getResource('lib/scale2x.c').read(),
-        'rotate': getResource('lib/rotate.c').read()
+        'surface_h': open('pygame/lib/surface.h', 'rb').read(),
+        'alphablit': open('pygame/lib/alphablit.c', 'rb').read(),
+        'surface_fill': open('pygame/lib/surface_fill.c', 'rb').read(),
+        'scale2x': open('pygame/lib/scale2x.c', 'rb').read(),
+        'rotate': open('pygame/lib/rotate.c', 'rb').read()
     }
 )
