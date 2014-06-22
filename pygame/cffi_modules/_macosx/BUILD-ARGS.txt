@@ -1,1 +1,1 @@
-{'libraries': ['SDL', 'objc'], 'extra_link_args': ['-framework', 'Cocoa'], 'include_dirs': ['/usr/local/include/SDL', '/usr/include/SDL']}
+{'libraries': ['SDL', 'objc'], 'extra_link_args': ['-framework', 'Cocoa'], 'sources': ['pygame/lib/sdlmain_osx.m'], 'include_dirs': ['/usr/local/include/SDL', '/usr/include/SDL', 'pygame/lib']}

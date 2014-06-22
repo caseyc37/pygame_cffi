@@ -15,7 +15,7 @@ with open(_parserfile, 'rb') as f:
     _parser = pickle.load(f)
 
 
-ffi = FFI(parser=_parser, backend=_libmodule.ffi)
+ffi = FFI(parser=_parser)
 
 from cffibuilder import ffiplatform, model
 from cffibuilder.genengine_cpy import GenCPythonEngine
