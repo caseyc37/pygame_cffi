@@ -1,4 +1,4 @@
-""" the pygame transfrom module """
+""" the pygame transform module """
 
 import math
 
