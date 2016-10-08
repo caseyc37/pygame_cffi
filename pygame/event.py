@@ -3,6 +3,7 @@
 from pygame._sdl import sdl, ffi
 from pygame._error import SDLError
 from pygame.display import check_video
+from pygame.compat import unichr_
 
 from pygame.constants import (
     ACTIVEEVENT, KEYDOWN, KEYUP, MOUSEMOTION, MOUSEBUTTONDOWN, MOUSEBUTTONUP,
@@ -42,7 +43,7 @@ class EventType(object):
                 self._dict = {}
             if kwargs:
                 self._dict.update(kwargs)
-            for attr, value in self._dict.iteritems():
+            for attr, value in self._dict.items():
                 setattr(self, attr, value)
             return
         if not sdlevent:
@@ -56,7 +57,7 @@ class EventType(object):
             if eventkey in _user_events:
                 self._dict = _user_events[eventkey]._dict
                 del _user_events[eventkey]
-                for attr, value in self._dict.iteritems():
+                for attr, value in self._dict.items():
                     setattr(self, attr, value)
                 return
             raise NotImplementedError("TODO: Error handling for user-posted events.")
@@ -66,7 +67,7 @@ class EventType(object):
             self.state = sdlevent.active.state
 
         elif self.type == KEYDOWN:
-            self.unicode = sdlevent.key.keysym.unicode
+            self.unicode = unichr_(sdlevent.key.keysym.unicode)
             self.key = sdlevent.key.keysym.sym
             self.mod = sdlevent.key.keysym.mod
             self.scancode = sdlevent.key.keysym.scancode
@@ -131,6 +132,9 @@ class EventType(object):
 
     def __nonzero__(self):
         return self.type != sdl.SDL_NOEVENT
+
+    def __bool__(self):
+        return self.__nonzero__()
 
     def __eq__(self, other):
         if not isinstance(other, EventType):
@@ -220,7 +224,9 @@ def post(event):
     check_video()
     is_blocked = sdl.SDL_EventState(event.type, sdl.SDL_QUERY) == sdl.SDL_IGNORE
     if is_blocked:
-        raise RuntimeError("event post blocked for %s" % event_name(event.type))
+        # Silently drop blocked events, since that's what pygame does
+        # (maybe worth logging somehow?)
+        return None
 
     sdl_event = ffi.new("SDL_Event *")
     sdl_event.type = event.type

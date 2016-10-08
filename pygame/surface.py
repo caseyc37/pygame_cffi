@@ -319,8 +319,8 @@ class Surface(object):
             srcrect.w = source._w
             srcrect.h = source._h
         if isinstance(dest, tuple) and len(dest) == 2:
-            destrect.x = dest[0]
-            destrect.y = dest[1]
+            destrect.x = int(dest[0])
+            destrect.y = int(dest[1])
             destrect.w = source._w
             destrect.h = source._h
         else:
@@ -448,7 +448,7 @@ class Surface(object):
     def get_rect(self, **kwargs):
         r = Rect._from4(0, 0, self._w, self._h)
         if kwargs:
-            for attr, value in kwargs.iteritems():
+            for attr, value in kwargs.items():
                 # Logic copied form pygame/surface.c - blame them
                 setattr(r, attr, value)
         return r
@@ -918,7 +918,7 @@ class Surface(object):
         get the number of bytes used per Surface row
         """
         self.check_surface()
-        return self._c_surface.flags
+        return self._c_surface.pitch
 
     def get_masks(self):
         """ get_masks() -> (R, G, B, A)
@@ -1040,6 +1040,20 @@ class Surface(object):
                 sdl.memmove(dst, src, span)
                 src += pitch
                 dst += pitch
+
+        return None
+
+    def lock(self):
+        """ lock() -> None
+        Dummy function to allow code using pygame.Surface.lock() to work.
+        """
+
+        return None
+
+    def unlock(self):
+        """ unlock() -> None
+        Dummy function to allow code using pygame.Surface.unlock() to work.
+        """
 
         return None
 

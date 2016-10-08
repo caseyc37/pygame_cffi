@@ -13,6 +13,13 @@ class GameRect(object):
 
 class Rect(object):
 
+    def __new__(cls, *args, **kwargs):
+        # Subclasses of Rect expect to be able to manipulate the values of the rect
+        # before calling Rect.__init__, so we ensure that self.r always exists.
+        obj = super(Rect, cls).__new__(cls)
+        obj.r =  GameRect(0, 0, 0, 0)
+        return obj
+
     def __init__(self, *args):
         try:
             if len(args) == 1:
@@ -149,14 +156,16 @@ class Rect(object):
 
     def get_topleft(self):
         return (self.r.x, self.r.y)
-    def set_topleft(self, (x, y)):
+    def set_topleft(self, pos):
+        x, y = pos
         self.r.x = int(x)
         self.r.y = int(y)
     topleft = property(get_topleft, set_topleft)
 
     def get_topright(self):
         return (self.r.x + self.r.w, self.r.y)
-    def set_topright(self, (x, y)):
+    def set_topright(self, pos):
+        x, y = pos
         self.r.x = int(x) - self.r.w
         self.r.y = int(y)
     topright = property(get_topright, set_topright)
@@ -164,7 +173,8 @@ class Rect(object):
     def get_midleft(self):
         return (self.r.x,
                 self.r.y + self.r.h // 2)
-    def set_midleft(self, (x, y)):
+    def set_midleft(self, pos):
+        x, y = pos
         self.r.x = int(x)
         self.r.y = int(y) - self.r.h // 2
     midleft = property(get_midleft, set_midleft)
@@ -172,7 +182,8 @@ class Rect(object):
     def get_midright(self):
         return (self.r.x + self.r.w,
                 self.r.y + self.r.h // 2)
-    def set_midright(self, (x, y)):
+    def set_midright(self, pos):
+        x, y = pos
         self.r.x = int(x) - self.r.w
         self.r.y = int(y) - self.r.h // 2
     midright = property(get_midright, set_midright)
@@ -180,7 +191,8 @@ class Rect(object):
     def get_midtop(self):
         return (self.r.x + self.r.w // 2, self.r.y)
 
-    def set_midtop(self, (x, y)):
+    def set_midtop(self, pos):
+        x, y = pos
         self.r.x = int(x) - self.r.w // 2
         self.r.y = int(y)
     midtop = property(get_midtop, set_midtop)
@@ -189,7 +201,8 @@ class Rect(object):
         return (self.r.x + self.r.w // 2,
                 self.r.y + self.r.h // 2)
 
-    def set_center(self, (x, y)):
+    def set_center(self, pos):
+        x, y = pos
         self.r.x = int(x) - self.r.w // 2
         self.r.y = int(y) - self.r.h // 2
     center = property(get_center, set_center)
@@ -209,7 +222,8 @@ class Rect(object):
     def get_bottomleft(self):
         return (self.r.x,
                 self.r.y + self.r.h)
-    def set_bottomleft(self, (x, y)):
+    def set_bottomleft(self, pos):
+        x, y = pos
         self.r.x = int(x)
         self.r.y = int(y) - self.r.h
     bottomleft = property(get_bottomleft, set_bottomleft)
@@ -217,7 +231,8 @@ class Rect(object):
     def get_midbottom(self):
         return (self.r.x + self.r.w // 2,
                 self.r.y + self.r.h)
-    def set_midbottom(self, (x, y)):
+    def set_midbottom(self, pos):
+        x, y = pos
         self.r.x = int(x) - self.r.w // 2
         self.r.y = int(y) - self.r.h
     midbottom = property(get_midbottom, set_midbottom)
@@ -225,14 +240,16 @@ class Rect(object):
     def get_bottomright(self):
         return (self.r.x + self.r.w,
                 self.r.y + self.r.h)
-    def set_bottomright(self, (x, y)):
+    def set_bottomright(self, pos):
+        x, y = pos
         self.r.x = int(x) - self.r.w
         self.r.y = int(y) - self.r.h
     bottomright = property(get_bottomright, set_bottomright)
 
     def get_size(self):
         return (self.r.w, self.r.h)
-    def set_size(self, (w, h)):
+    def set_size(self, size):
+        w, h = size
         self.r.w = int(w)
         self.r.h = int(h)
     size = property(get_size, set_size)
@@ -276,7 +293,7 @@ class Rect(object):
             x = self.r.x
 
         if self.r.h >= other.h:
-            y = other.y + other.h / 2 - self.r.h / 2
+            y = other.y + other.h // 2 - self.r.h // 2
         elif self.r.y < other.y:
             y = other.y
         elif (self.r.y + self.r.h >
@@ -476,7 +493,7 @@ class Rect(object):
         test if one rectangle in a dictionary intersects
         """
         try:
-            for key, val in rect_dict.iteritems():
+            for key, val in rect_dict.items():
                 if values:
                     try:
                         rect = game_rect_from_obj(val)
@@ -498,7 +515,7 @@ class Rect(object):
         """
         colliding_pairs = []
         try:
-            for key, val in rect_dict.iteritems():
+            for key, val in rect_dict.items():
                 if values:
                     try:
                         rect = game_rect_from_obj(val)

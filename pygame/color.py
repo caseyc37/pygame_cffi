@@ -1,8 +1,11 @@
 import string
 
 from pygame._sdl import ffi, sdl
+from pygame.compat import string_types, long_
 import pygame.colordict
 
+# Some games take colors from pygame.color.THECOLORS dict
+THECOLORS = pygame.colordict.THECOLORS
 
 class Color(object):
     def __init__(self, *args):
@@ -12,18 +15,18 @@ class Color(object):
             raise TypeError("function takes at most 4 arguments (%s given)" % (
                 len(args),))
 
-        if isinstance(args[0], basestring):
+        if isinstance(args[0], string_types):
             if len(args) > 1:
                 raise ValueError("invalid arguments")
             r, g, b, a = self._parse_string_color(args[0])
 
         elif len(args) == 1:
             arg = args[0]
-            if isinstance(arg, int):
-                r = (arg >> 24) & 0xff
-                g = (arg >> 16) & 0xff
-                b = (arg >> 8) & 0xff
-                a = arg & 0xff
+            if isinstance(arg, (int, long_)):
+                r = int((arg >> 24) & 0xff)
+                g = int((arg >> 16) & 0xff)
+                b = int((arg >> 8) & 0xff)
+                a = int(arg & 0xff)
             elif isinstance(arg, (tuple, list)):
                 if len(arg) == 4:
                     r, g, b, a = arg
@@ -35,7 +38,7 @@ class Color(object):
             elif isinstance(arg, Color):
                 r, g, b, a = arg[:]
             else:
-                ValueError("invalid color argument")
+                raise ValueError("invalid color argument")
 
         elif len(args) == 4:
             r, g, b, a = args
@@ -43,7 +46,7 @@ class Color(object):
             r, g, b = args
             a = 255
         else:
-            ValueError("invalid color argument")
+            raise ValueError("invalid color argument")
 
         self._data = [0, 0, 0, 0]
         self._len = 4
@@ -331,6 +334,9 @@ class Color(object):
     def __long__(self):
         return self.__int__()
 
+    def __index__(self):
+        return self.__int__()
+
     def __float__(self):
         return float(int(self))
 
@@ -385,7 +391,7 @@ class Color(object):
     def __floordiv__(self, other):
         if not isinstance(other, Color):
             return NotImplemented
-        return Color(*[self[i] / other[i] if other[i] else 0
+        return Color(*[self[i] // other[i] if other[i] else 0
                        for i in range(4)])
 
     def __div__(self, other):
@@ -431,7 +437,7 @@ def _check_range(val):
 
 
 def create_color(color, color_format):
-    if isinstance(color, int):
+    if isinstance(color, (int, long_)):
         return color
     if isinstance(color, Color):
         return sdl.SDL_MapRGBA(color_format, color.r, color.g, color.b,

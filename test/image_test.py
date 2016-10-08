@@ -22,6 +22,7 @@ from pygame.compat import xrange_, ord_
 import os
 import array
 import tempfile
+from io import BytesIO
 
 def test_magic(f, magic_hex):
     """ tests a given file to see if the magic hex matches.
@@ -86,6 +87,23 @@ class ImageModuleTest( unittest.TestCase ):
         surf = pygame.image.load(f)
         f.close()
 
+        pixel_x0_y0 = surf.get_at((0, 0))
+        pixel_x1_y0 = surf.get_at((1, 0))
+        pixel_x0_y1 = surf.get_at((0, 1))
+        pixel_x1_y1 = surf.get_at((1, 1))
+
+        self.assertEquals(pixel_x0_y0, reddish_pixel)
+        self.assertEquals(pixel_x1_y0, greenish_pixel)
+        self.assertEquals(pixel_x0_y1, bluish_pixel)
+        self.assertEquals(pixel_x1_y1, greyish_pixel)
+
+        # Test that we can load it going via a BytesIO object
+
+        f = open(f_path, 'rb')
+        buf = BytesIO(f.read())
+        f.close()
+
+        surf = pygame.image.load(buf)
         pixel_x0_y0 = surf.get_at((0, 0))
         pixel_x1_y0 = surf.get_at((1, 0))
         pixel_x0_y1 = surf.get_at((0, 1))
@@ -228,9 +246,9 @@ class ImageModuleTest( unittest.TestCase ):
             for x in xrange_(surface_to_modify.get_width()):
                 for y in xrange_(surface_to_modify.get_height()):
                     color = surface_to_modify.get_at((x, y))
-                    premult_color = (color[0]*color[3]/255,
-                                     color[1]*color[3]/255,
-                                     color[2]*color[3]/255,
+                    premult_color = (color[0] * color[3] // 255,
+                                     color[1] * color[3] // 255,
+                                     color[2] * color[3] // 255,
                                      color[3])
                     surface_to_modify.set_at((x, y), premult_color)
             

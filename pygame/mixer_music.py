@@ -3,6 +3,7 @@
 from pygame._sdl import ffi, sdl
 from pygame._error import SDLError
 from pygame import event
+from pygame.compat import bytes_, unicode_
 from pygame.rwobject import rwops_encode_file_path, rwops_from_file
 
 _current_music = None
@@ -30,7 +31,7 @@ def load(obj):
        Load a music file for playback"""
     check_mixer()
     global _current_music, _queue_music
-    if isinstance(obj, basestring):
+    if isinstance(obj, (bytes_, unicode_)):
         filename = rwops_encode_file_path(obj)
         new_music = sdl.Mix_LoadMUS(filename)
     else:
@@ -124,7 +125,7 @@ def get_busy():
     return sdl.Mix_PlayingMusic() != 0
 
 
-def set_endevent(end_event=None):
+def set_endevent(end_event=sdl.SDL_NOEVENT):
     global _endmusic_event
     _endmusic_event = end_event
 
@@ -203,7 +204,12 @@ def queue(filename):
 def _endmusic_callback():
     global _current_music, _queue_music, _music_pos, _music_pos_time
     if _endmusic_event is not None and sdl.SDL_WasInit(sdl.SDL_INIT_AUDIO):
-        event.post(event.Event(_endmusic_event))
+        # Pygame doesn't do the same checks for this path as in
+        # event.post, and people rely on that, so we also duplicate
+        # the logic
+        event = ffi.new('SDL_Event*')
+        event.type = _endmusic_event
+        sdl.SDL_PushEvent(event)
 
     if _queue_music:
         if _current_music:
